@@ -1,8 +1,9 @@
 {
     "autoload" : {
         "psr-4" : {
-	    "Controllers\\": "app/Controllers",
-	    "Models\\": "app/Models"
-	}
+            "Controllers\\": "app/Controllers",
+            "Models\\": "app/Models",
+            "Migrations\\": "Migrations"
+	    }
     }
 }

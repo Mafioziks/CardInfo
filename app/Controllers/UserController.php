@@ -13,10 +13,13 @@ class UserController {
         $userQuery->execute();
         $user = $userQuery->fetchObject(User::class);
 
-        echo "Id: " . $user->id . "</br>";
-        echo "Name: " . $user->name . "</br>";
-        echo "Email: " . $user->email . "</br>";
-
+        if ($user) {
+            echo "Id: " . $user->id . "</br>";
+            echo "Name: " . $user->name . "</br>";
+            echo "Email: " . $user->email . "</br>";
+        } else {
+            echo "No users found";
+        }
         // JSON resonse
         // $result = [
         //     'id' => $user->id,
@@ -37,9 +40,15 @@ class UserController {
             $user->name = $data['name'];
             $user->email = $data['email'];
 
-            $user->save();
+            $id = $user->save();
+
+            if ($id != 0) {
+                $user->id = $id;
+            }
 
             echo "\e[32;1mUser inserted\e[27;0m";
+            return $user->id;
         }
+        return false;
     }
 }

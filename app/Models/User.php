@@ -14,5 +14,6 @@ class User {
         $userQuery->bindValue(':email', $this->email, \PDO::PARAM_STR);
         $userQuery->execute();
         // Need to update id to last inserted id
+        return $db->lastInsertId();
     }
 }
