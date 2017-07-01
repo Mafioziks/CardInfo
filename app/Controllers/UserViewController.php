@@ -42,7 +42,6 @@ class UserViewController {
     }
 
     public static function postAdd() {
-        // var_export($_POST);
         if (isset($_POST['email'])) {
             $_POST = [
                 0 => json_encode($_POST)
@@ -52,7 +51,29 @@ class UserViewController {
                 header('Location: /user/view/' . $result);
                 exit;
             }
-            return "User not added succesfully";
         }
+        return "User not added succesfully";
+    }
+    
+    public static function getList() {
+    		$userlist = UserController::getList();
+    		?>
+    		<!DOCTYPE html>
+    		<html>
+    			<head>
+    				<meta charset="utf-8">
+    				<title>User list</title>
+    			</head>
+    			<body>
+    				<div class="content">
+    					<ul>
+    					<?php foreach ($userlist as $user): ?>
+    						<li><?= $user->name ?>: <?= $user->email ?></li>
+    					<?php endforeach; ?>
+    					</ul>
+    				</div>
+    			</body>
+    		</html>
+    		<?php
     }
 }

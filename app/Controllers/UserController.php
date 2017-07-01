@@ -7,27 +7,23 @@ use Models\User;
 class UserController {
     public static function getView($id) {
         // header('Content Type: json');
-        $db = new \PDO('mysql:host=localhost;dbname=testdb', 'root', 'mafija');
-        $userQuery = $db->prepare('SELECT * FROM users WHERE id = :id');
-        $userQuery->bindValue(':id', $id, \PDO::PARAM_INT);
-        $userQuery->execute();
-        $user = $userQuery->fetchObject(User::class);
+        $user = User::getById($id);
 
-        if ($user) {
-            echo "Id: " . $user->id . "</br>";
-            echo "Name: " . $user->name . "</br>";
-            echo "Email: " . $user->email . "</br>";
-        } else {
-            echo "No users found";
-        }
+//         if ($user) {
+//             echo "Id: " . $user->id . "</br>";
+//             echo "Name: " . $user->name . "</br>";
+//             echo "Email: " . $user->email . "</br>";
+//         } else {
+//             echo "No users found";
+//         }
         // JSON resonse
-        // $result = [
-        //     'id' => $user->id,
-        //     'name' => $user->name,
-        //     'email' => $user->email
-        // ];
+        $result = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email
+        ];
 
-        // var_export(json_encode($result));
+        var_export(json_encode($result));
     }
 
     public static function postAdd() {
@@ -39,16 +35,20 @@ class UserController {
             $user = new User();
             $user->name = $data['name'];
             $user->email = $data['email'];
-
-            $id = $user->save();
-
-            if ($id != 0) {
-                $user->id = $id;
+            
+            if (!$user->save()) {
+            	break;
             }
+            
+            var_export($user);
 
             echo "\e[32;1mUser inserted\e[27;0m";
             return $user->id;
         }
         return false;
+    }
+    
+    public static function getList() {
+    	return (new User())->getAll();
     }
 }

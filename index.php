@@ -25,7 +25,7 @@ if (count($uriParts) < 1) {
     call_user_func(['Controllers\MainController', $method . ucfirst('index')]);
 } else if ($uriParts[0] == "api") { // API requests
     echo "<pre>";
-    call_user_func_array(['Controllers\\' . ucfirst($uriParts[1]) . 'Controller', $method . ucfirst(isset($uriParts[2]) && !is_numeric($uriParts[2])? : 'view')], [isset($uriParts[2]) && is_numeric($uriParts[2]) ? $uriParts[2] : (isset($uriParts[3]) ? $uriParts[3] : null)]); // Call class functions
+    call_user_func_array(['Controllers\\' . ucfirst($uriParts[1]) . 'Controller', $method . ucfirst(isset($uriParts[2]) && !is_numeric($uriParts[2])? $uriParts[2] : 'view')], [isset($uriParts[2]) && is_numeric($uriParts[2]) ? $uriParts[2] : (isset($uriParts[3]) ? $uriParts[3] : null)]); // Call class functions
     echo "</pre>";
 } else if (count($uriParts) == 1) {
     var_dump("HERE");
