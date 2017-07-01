@@ -44,11 +44,11 @@ class InitialMigration {
 
     public static function down() {
         $result[] = DatabaseController::query(
-            "DROP TABLE cards"
+            "DROP TABLE IF EXISTS cards"
         );
 
         $result[] = DatabaseController::query(
-            "DROP TABLE users"
+            "DROP TABLE IF EXISTS users"
         );
 
         $result = array_filter($result, function ($val) {

@@ -113,7 +113,7 @@ class Model {
 	 * @return null | object[]
 	 */
 	public static function getAll() {
-		$objects = DatabaseController::query('SELECT * FROM ' . self::_table, get_called_class());
+		$objects = DatabaseController::query('SELECT * FROM ' . self::generateTableName(), get_called_class());
 		
 		if (!is_array($objects)) {
 			$objects[] = $objects;
