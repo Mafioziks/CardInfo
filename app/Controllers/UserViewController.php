@@ -3,23 +3,29 @@
 namespace Controllers;
 
 use Models\User;
+use Views\UserView;
+use Views\SiteView;
 
-class UserViewController {
+class UserViewController extends Controller{
     public static function getView($id) {
-        // header('Content Type: json');
-        $db = new \PDO('mysql:host=localhost;dbname=testdb', 'root', 'mafija');
-        $userQuery = $db->prepare('SELECT * FROM users WHERE id = :id');
-        $userQuery->bindValue(':id', $id, \PDO::PARAM_INT);
-        $userQuery->execute();
-        $user = $userQuery->fetchObject(User::class);
+    	if ($id == null) {
+    		header('Location: /user/list/');
+    		exit;
+    	}
+        $user = User::getById($id);
+        
         echo "<h3> View Class </h3>";
-        if ($user) {
-            echo "Id: " . $user->id . "</br>";
-            echo "Name: " . $user->name . "</br>";
-            echo "Email: " . $user->email . "</br>";
-        } else {
-            echo "No users found";
-        }
+        
+        SiteView::draw(
+        	UserView::draw($user)
+        );
+//         if ($user) {
+//             echo "Id: " . $user->id . "</br>";
+//             echo "Name: " . $user->name . "</br>";
+//             echo "Email: " . $user->email . "</br>";
+//         } else {
+//             echo "No users found";
+//         }
     }
 
     public static function getAdd() {
@@ -56,24 +62,29 @@ class UserViewController {
     }
     
     public static function getList() {
-    		$userlist = UserController::getList();
-    		?>
-    		<!DOCTYPE html>
-    		<html>
-    			<head>
-    				<meta charset="utf-8">
-    				<title>User list</title>
-    			</head>
-    			<body>
-    				<div class="content">
-    					<ul>
-    					<?php foreach ($userlist as $user): ?>
-    						<li><?= $user->name ?>: <?= $user->email ?></li>
-    					<?php endforeach; ?>
-    					</ul>
-    				</div>
-    			</body>
-    		</html>
-    		<?php
+    	global $auth;
+    	if (!$auth->isAuthorised()) {
+    		echo "<p>You are not authorised!</p>";
+    		exit;
+    	}
+    	$userlist = UserController::getList();
+    	?>
+    	<!DOCTYPE html>
+    	<html>
+    		<head>
+    			<meta charset="utf-8">
+    			<title>User list</title>
+    		</head>
+    		<body>
+    			<div class="content">
+    				<ul>
+    				<?php foreach ($userlist as $user): ?>
+    					<li><?= $user->name ?>: <?= $user->email ?></li>
+    				<?php endforeach; ?>
+    				</ul>
+    			</div>
+    		</body>
+    	</html>
+    	<?php
     }
 }

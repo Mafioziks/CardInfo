@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Models\Card;
+use Views\CardView;
 
 class CardViewController {
 	public function getList() {
@@ -16,11 +17,9 @@ class CardViewController {
 			</head>
 			<body>
 				<div class="content">
-					<ul>
 					<?php foreach ($cardList as $card): ?>
-						<li><?= $card->name ?>: <?= $card->owner_id ?></li>
+						<?php CardView::draw($card) ?>
 					<?php endforeach; ?>
-					</ul>
 				</div>
 			</body>
 		</html>
@@ -72,11 +71,11 @@ class CardViewController {
 	
 	public function getView($id) {
 		// Change to use API for fetching info
-		$db = new \PDO('mysql:host=localhost;dbname=testdb', 'root', 'mafija');
-		$cardQuery = $db->prepare('SELECT * FROM cards WHERE id = :id');
-		$cardQuery->bindValue(':id', $id, \PDO::PARAM_INT);
-		$cardQuery->execute();
-		$card = $cardQuery->fetchObject(Card::class);
+		if ($id == null) {
+			header('Location: /card/list/');	
+			exit;
+		}
+		$card = Card::getById($id);
 		
 // 		var_export($card);
 		

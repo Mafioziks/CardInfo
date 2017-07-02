@@ -10,13 +10,14 @@ namespace Controllers;
 class Model {
 	
 	private $_table;
-	private $_rules;
+	private $_rules = [];
+	private $_relations = [];
 	
 	/**
 	 * Default constructor - generates table name so later that uses less resources
 	 */
 	public function __construct() {
-		$this->_table = Model::generateTableName();
+		$this->_table = $this->generateTableName();
 	}
 	
 	/**
@@ -41,49 +42,49 @@ class Model {
 		// convert to mysql friendly keys and values
 		foreach ($vars as $key => $val) {
 			$k = $this->filterToDb($key);
-			switch($this->_rules[$k]) {
-				case "integer":
-					$v = intval($val);
-					break;
-				case "double":
-				case "float":
-					$v = number_format($val);
-					break;
-				case "timestamp":
-					if (is_object($val)) {
-						/** \DateTime $val */
-						$v = $val->getTimestamp();
-						break;
-					}
-					$v = intval($val);
-				case "datetime":
-					if (is_object($val)) {
-						/** \DateTime $val */
-						$v = $val->format('Y-m-d H:i:s');
-						break;
-					}
-					$date = new \DateTime();
-					$date->setTimestamp($val);
-					$v = $date->format('Y-m-d H:i:s');
-					break;
-				case "string":
-				default:
-					$v = "'" . $val . "'";
-			}
-			
-			$dbVars[$k] = $v ; 
+			$dbVars[$k] = $this->format($key, $val); 
 		}
-
+		
+		error_log(var_export($dbVars, true));
+		
 		// convert to strings for query
 		$columns = '(`'. implode('`,`', array_keys($dbVars)) . '`)';
 		$values = ' VALUES (' . implode(',', array_values($dbVars)) . ')';
 		
 		$sql .= $columns . $values;
-				
+		error_log($sql);
 		// insert and set id for this object from db
 		$this->id = DatabaseController::query($sql, get_class($this));
 	}
 	
+	public function format($name, $value) {
+		$class = get_called_class();
+		$name = Model::filterToDb($name);
+		switch($class::getRules()[$name]) {
+			case "integer":
+				return intval($value);
+			case "double":
+			case "float":
+				return number_format($value);
+			case "timestamp":
+				if (is_object($value)) {
+					/** \DateTime $val */
+					return $value->getTimestamp();
+				}
+				return intval($value);
+			case "datetime":
+				if (is_object($value)) {
+					/** \DateTime $val */
+					return "'" . $value->format('Y-m-d H:i:s') . "'";
+				}
+				$date = new \DateTime();
+				$date->setTimestamp($value);
+				return "'" . $date->format('Y-m-d H:i:s') . "'";
+			case "string":
+			default:
+				return "'" . $value . "'";
+		}
+	}
 	/**
 	 * Returns one object of called class
 	 * 
@@ -114,6 +115,38 @@ class Model {
 	 */
 	public static function getAll() {
 		$objects = DatabaseController::query('SELECT * FROM ' . self::generateTableName(), get_called_class());
+		
+		if (!is_array($objects)) {
+			$objects[] = $objects;
+		}
+		
+		foreach ($objects as $object) {
+			$object = Model::fetchFix($object);
+		}
+		
+		return $objects;
+	}
+	
+	/**
+	 * Gets model by parameter
+	 * @param string $var
+	 * @param mixed $val
+	 * @return Model[]|NULL
+	 */
+	public static function getBy($args) {
+		$whereArray = [];
+		foreach ($args as $key => $value) {
+			$whereArray[] = self::filterToDb($key) . ' = ' . self::format($key, $value) . ' ';
+		}
+		
+		if (!empty($whereArray)) {
+			$where = implode(' AND ', $whereArray);
+		}
+		
+		$objects = DatabaseController::query(
+				'SELECT * FROM ' . self::generateTableName() . (isset($where) ? ' WHERE ' . $where : ''),
+			get_called_class()
+		);
 		
 		if (!is_array($objects)) {
 			$objects[] = $objects;
@@ -205,5 +238,25 @@ class Model {
 	 */
 	public function setParameterRules($rules) {
 		$this->_rules = $rules;
+	}
+	
+	public function addRelations($relations) {
+		$this->_relations = $relations;
+	}
+	
+	public function __get($name) {
+		if (key_exists($name, $this->_relations)) {
+			/** \Model $model */
+			$model = '\Models\\' .  ucfirst($name);
+			$result = $model::getBy([$this->_relations[$name][1] => $this->{$this->_relations[$name][0]}]);
+			if (count($result) == 1) {
+				return $result[0];
+			}
+			return $result;
+		}
+	}
+	
+	public static function getRules() {
+		return [];
 	}
 }

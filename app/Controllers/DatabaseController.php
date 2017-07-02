@@ -3,6 +3,12 @@
 namespace Controllers;
 
 class DatabaseController {
+	
+	/**
+	 * Makes connection to database using PDO
+	 * 
+	 * @return \PDO
+	 */
     private static function connect() {
         $pdo = new \PDO('mysql:host=localhost;dbname=testdb', 'root', 'mafija');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

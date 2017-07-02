@@ -1,8 +1,12 @@
 <?php
-
+session_start();
 require("vendor/autoload.php");
 
-use Controllers\MainController;
+use Services\AuthorisationService;
+use Controllers\Helpers\Uri;
+
+$apiBase = 'api';
+$isApi = false;
 
 // Manages cli
 if (isset($argv[1]) && isset($argv[2])) {
@@ -11,25 +15,37 @@ if (isset($argv[1]) && isset($argv[2])) {
     exit;
 }
 
+// Initialize service
+$auth = AuthorisationService::getInstance();
+
 // Get request method
 $method = strtolower($_SERVER['REQUEST_METHOD']);
-// Get routing parts from request uri
-$uriParts = explode('/', $_SERVER['REQUEST_URI']);
-// Remove empty variablies
-$uriParts = array_filter($uriParts, function ($val) { return !empty($val); });
-// Reindex valriables
-$uriParts = array_values($uriParts);
 
-// Routing - place where all of the magic happens
-if (count($uriParts) < 1) {
-    call_user_func(['Controllers\MainController', $method . ucfirst('index')]);
-} else if ($uriParts[0] == "api") { // API requests
-    echo "<pre>";
-    call_user_func_array(['Controllers\\' . ucfirst($uriParts[1]) . 'Controller', $method . ucfirst(isset($uriParts[2]) && !is_numeric($uriParts[2])? $uriParts[2] : 'view')], [isset($uriParts[2]) && is_numeric($uriParts[2]) ? $uriParts[2] : (isset($uriParts[3]) ? $uriParts[3] : null)]); // Call class functions
-    echo "</pre>";
-} else if (count($uriParts) == 1) {
-    var_dump("HERE");
-    call_user_func_array(['Controllers\\' . ucfirst($uriParts[0]) . 'ViewController', $method . 'Index']); // Call class functions
-} else if (count($uriParts) >= 2) {
-    call_user_func_array(['Controllers\\' . ucfirst($uriParts[0]) . 'ViewController', $method . ucfirst($uriParts[1])], [isset($uriParts[2]) ? $uriParts[2] : null]); // Call class functions
+$link = $_SERVER['REQUEST_URI'];
+
+// Edit for api calls
+if (strpos($link, $apiBase)) {
+	$isApi = true;
+	$link = substr($link, strpos($link, $apiBase) + strlen($apiBase));
+}
+
+// SPlit link in callable parts
+$request = Uri::splitter($link, $isApi, 'main', 'index');
+
+// Get error page
+$status = http_response_code();
+if ($status == 404) {
+	include 'resources/static/404.html';
+	exit;
+}
+
+// Call controller
+if ($isApi) {
+	echo "<pre>";
+}
+
+call_user_func_array([$request['controller'], $request['function']], (isset($request['param']) ? [$request['param']] : []));
+
+if ($isApi) {
+	echo "</pre>";
 }

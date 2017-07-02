@@ -7,16 +7,11 @@ use Models\User;
 class UserController {
     public static function getView($id) {
         // header('Content Type: json');
+        if ($id == null) {
+        	return null;
+        }
         $user = User::getById($id);
 
-//         if ($user) {
-//             echo "Id: " . $user->id . "</br>";
-//             echo "Name: " . $user->name . "</br>";
-//             echo "Email: " . $user->email . "</br>";
-//         } else {
-//             echo "No users found";
-//         }
-        // JSON resonse
         $result = [
             'id' => $user->id,
             'name' => $user->name,

@@ -4,7 +4,8 @@
 			"Controllers\\" : "app/Controllers",
 			"Models\\" : "app/Models",
 			"Migrations\\" : "Migrations",
-			"Views\\" : "app/Views"
+			"Views\\" : "app/Views",
+			"Services\\" : "app/Services"
 		}
 	},
 	"authors" : [{
