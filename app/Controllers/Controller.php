@@ -3,7 +3,7 @@
 namespace Controllers;
 
 class Controller {
-	public function __construct() {
-		global $auth;
-	}
+    public function __construct() {
+        global $auth;
+    }
 }

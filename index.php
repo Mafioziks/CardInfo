@@ -25,8 +25,8 @@ $link = $_SERVER['REQUEST_URI'];
 
 // Edit for api calls
 if (strpos($link, $apiBase)) {
-	$isApi = true;
-	$link = substr($link, strpos($link, $apiBase) + strlen($apiBase));
+    $isApi = true;
+    $link = substr($link, strpos($link, $apiBase) + strlen($apiBase));
 }
 
 // SPlit link in callable parts
@@ -35,17 +35,17 @@ $request = Uri::splitter($link, $isApi, 'main', 'index');
 // Get error page
 $status = http_response_code();
 if ($status == 404) {
-	include 'resources/static/404.html';
-	exit;
+    include 'resources/static/404.html';
+    exit;
 }
 
 // Call controller
 if ($isApi) {
-	echo "<pre>";
+    echo "<pre>";
 }
 
 call_user_func_array([$request['controller'], $request['function']], (isset($request['param']) ? [$request['param']] : []));
 
 if ($isApi) {
-	echo "</pre>";
+    echo "</pre>";
 }

@@ -9,20 +9,22 @@ class User extends Model{
     public $name;
     public $email;
     public $password;
+    public $admin;
     
     public function __construct() {
-    	parent::__construct();
-    	$this->addRelations([
-    		'card' => ['id', 'ownerId'],
-    	]);
+        parent::__construct();
+        $this->addRelations([
+            'card' => ['id', 'ownerId'],
+        ]);
     }
     
     public static function getRules() {
-    	return [
-    		'id'       => 'integer',
-    		'name' 	   => 'string',
-    		'email'    => 'string',
-    		'password' => 'string',
-    	];
+        return [
+            'id'       => 'integer',
+            'name'        => 'string',
+            'email'    => 'string',
+            'password' => 'string',
+            'admin'    => 'boolean',
+        ];
     }
 }

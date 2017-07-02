@@ -3,8 +3,8 @@
 namespace Controllers;
 
 class AuthController {
-	
-	public static function postLogin() {
-		
-	}
+    
+    public static function postLogin() {
+        
+    }
 }

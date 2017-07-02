@@ -8,7 +8,7 @@ class UserController {
     public static function getView($id) {
         // header('Content Type: json');
         if ($id == null) {
-        	return null;
+            return null;
         }
         $user = User::getById($id);
 
@@ -32,7 +32,7 @@ class UserController {
             $user->email = $data['email'];
             
             if (!$user->save()) {
-            	break;
+                break;
             }
             
             var_export($user);
@@ -44,6 +44,6 @@ class UserController {
     }
     
     public static function getList() {
-    	return (new User())->getAll();
+        return (new User())->getAll();
     }
 }

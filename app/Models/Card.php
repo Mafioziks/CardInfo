@@ -11,9 +11,9 @@ class Card extends Model {
     public $ownerId;
     
     public function __construct() {
-    	parent::__construct();
-    	$this->addRelations([		
-    		'user' => ['ownerId','id'],
-    	]);
+        parent::__construct();
+        $this->addRelations([        
+            'user' => ['ownerId','id'],
+        ]);
     }
 }

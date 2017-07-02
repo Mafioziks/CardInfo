@@ -6,7 +6,7 @@ use Models\Card;
 
 class CardController {
     public static function getView($id) {
-    	$card = Card::getById($id);
+        $card = Card::getById($id);
 
         echo "Name: " . $card->name . "</br>";
         echo "Card number: " . $card->cardNumber . "</br>";

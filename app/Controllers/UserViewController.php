@@ -8,16 +8,16 @@ use Views\SiteView;
 
 class UserViewController extends Controller{
     public static function getView($id) {
-    	if ($id == null) {
-    		header('Location: /user/list/');
-    		exit;
-    	}
+        if ($id == null) {
+            header('Location: /user/list/');
+            exit;
+        }
         $user = User::getById($id);
         
         echo "<h3> View Class </h3>";
         
         SiteView::draw(
-        	UserView::draw($user)
+            UserView::draw($user)
         );
 //         if ($user) {
 //             echo "Id: " . $user->id . "</br>";
@@ -62,29 +62,29 @@ class UserViewController extends Controller{
     }
     
     public static function getList() {
-    	global $auth;
-    	if (!$auth->isAuthorised()) {
-    		echo "<p>You are not authorised!</p>";
-    		exit;
-    	}
-    	$userlist = UserController::getList();
-    	?>
-    	<!DOCTYPE html>
-    	<html>
-    		<head>
-    			<meta charset="utf-8">
-    			<title>User list</title>
-    		</head>
-    		<body>
-    			<div class="content">
-    				<ul>
-    				<?php foreach ($userlist as $user): ?>
-    					<li><?= $user->name ?>: <?= $user->email ?></li>
-    				<?php endforeach; ?>
-    				</ul>
-    			</div>
-    		</body>
-    	</html>
-    	<?php
+        global $auth;
+        if (!$auth->isAuthorised()) {
+            echo "<p>You are not authorised!</p>";
+            exit;
+        }
+        $userlist = UserController::getList();
+        ?>
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>User list</title>
+            </head>
+            <body>
+                <div class="content">
+                    <ul>
+                    <?php foreach ($userlist as $user): ?>
+                        <li><?= $user->name ?>: <?= $user->email ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                </div>
+            </body>
+        </html>
+        <?php
     }
 }

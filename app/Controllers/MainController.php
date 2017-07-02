@@ -15,7 +15,7 @@ class MainController {
         $users = User::getAll();
         
         foreach ($users as $user) {
-        	echo "<p>Name: <strong>{$user->name}</strong></p>";
+            echo "<p>Name: <strong>{$user->name}</strong></p>";
         }
 
         echo "</pre>";

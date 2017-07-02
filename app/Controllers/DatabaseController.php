@@ -3,12 +3,12 @@
 namespace Controllers;
 
 class DatabaseController {
-	
-	/**
-	 * Makes connection to database using PDO
-	 * 
-	 * @return \PDO
-	 */
+    
+    /**
+     * Makes connection to database using PDO
+     * 
+     * @return \PDO
+     */
     private static function connect() {
         $pdo = new \PDO('mysql:host=localhost;dbname=testdb', 'root', 'mafija');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -27,14 +27,14 @@ class DatabaseController {
         $q->execute();
         
         if (preg_match('/^SELECT\.*/', $query)) {
-	        if ($class == null) {
-	            return $q->fetchAll(\PDO::FETCH_ASSOC);
-	        }
-	        $result = [];
-	        while ($object = $q->fetchObject($class)) {
-	        	$result[] = $object;
-	        }
-	        return $result;
+            if ($class == null) {
+                return $q->fetchAll(\PDO::FETCH_ASSOC);
+            }
+            $result = [];
+            while ($object = $q->fetchObject($class)) {
+                $result[] = $object;
+            }
+            return $result;
         }
         
         return $db->lastInsertId();
