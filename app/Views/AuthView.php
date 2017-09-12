@@ -6,18 +6,24 @@ class AuthView {
     public static function loginForm() {
         ?>
         <div>
-            <form action="/auth/login/" method="post">
-                <div>
-                    <label>Email:</label>
-                    <input type="text" name="email">
+            <form action="/auth/login/" method="post" class="form-horizontal clearfix">
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Email:</label>
+                    <div class="col-sm-2">
+                    	<input type="text" name="email" class="form-control">
+                	</div>
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password">
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Password:</label>
+                    <div class="col-sm-2">
+                    	<input type="password" name="password" class="form-control">
+                	</div>
                 </div>
-                <button>Log In</button>
+                <div class="form-group">
+                	<button class="btn btn-primary col-sm-3">Log In</button>
+            	</div>
             </form>
-            <a href="/auth/register/">Register</a>
+            <a href="/auth/register/" class="col-sm-3" style="text-align: center;">Register</a>
         </div>
         <?php
     }

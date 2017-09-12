@@ -21,7 +21,7 @@ class User extends Model{
     public static function getRules() {
         return [
             'id'       => 'integer',
-            'name'        => 'string',
+            'name'     => 'string',
             'email'    => 'string',
             'password' => 'string',
             'admin'    => 'boolean',

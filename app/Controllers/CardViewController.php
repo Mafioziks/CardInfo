@@ -7,7 +7,15 @@ use Views\CardView;
 
 class CardViewController {
     public function getList() {
-        $cardList = Card::getAll();
+    	$cardList = [];
+    	global $auth;
+    	if ($auth->isAuthorised()) {
+    		if ($auth->getUser()->admin) {
+        		$cardList = Card::getAll();
+    		} else {
+    			$cardList = $auth->getUser()->card;
+    		}
+    	}
         ?>
         <!DOCTYPE hmtl>
         <html>
@@ -27,6 +35,11 @@ class CardViewController {
     }
     
     public function getAdd() {
+    	global $auth;
+    	if (!$auth->isAuthorised()) {
+    		header('Loaction: /auth/login/');
+    		exit;
+    	}
         ?>
         <html>
             <head>
@@ -35,10 +48,16 @@ class CardViewController {
             </head>
             <body>
                 <div class="content">
-                    <form action="/card/add/" method="POST">
-                        <input name="name" type="text" /></br>
-                        <input name="card_number" type="number" /></br>
-                        <input name="owner_id" type="number" /></br>
+                    <form action="/card/add/" method="post">
+                    	<div>
+                    		<label>Card name:</label>
+                        	<input name="name" type="text" />
+                        </div>
+                        <div>
+                        	<label>Card number:</label>
+                        	<input name="card_number" type="number" />
+                        </div>
+                        <input name="owner_id" type="number" value="<?= $auth->getUser()->id ?>" hidden/>
                         <button>Add</button>
                     </form>
                 </div>
@@ -49,7 +68,7 @@ class CardViewController {
     
     public function postAdd() {
         $set = true;
-        
+
         foreach ($_POST as $key => $val) {
             if (empty($val)) {
                 $set = false; 
@@ -57,9 +76,7 @@ class CardViewController {
         }
         
         if ($set) {
-            $_POST = [
-                    0 => json_encode($_POST)
-            ];
+            $_POST[0] = json_encode($_POST);
             $result = \Controllers\CardController::postAdd();
             if ($result) {
                 header('Location: /card/view/' . $result);
@@ -87,8 +104,8 @@ class CardViewController {
         
         foreach ($cards as $c) {
             echo "Name: " . $c->name . "</br>";
-            echo "Card number: " . $c->card_number . "</br>";
-            echo "Owner id: " . $c->owner_id . "</br>";
+            echo "Card number: " . $c->cardNumber . "</br>";
+            echo "Owner id: " . $c->user->name . "</br>";
         }
     }
 }

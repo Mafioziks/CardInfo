@@ -44,9 +44,7 @@ class Model {
             $k = $this->filterToDb($key);
             $dbVars[$k] = $this->format($key, $val); 
         }
-        
-        error_log(var_export($dbVars, true));
-        
+                
         // convert to strings for query
         $columns = '(`'. implode('`,`', array_keys($dbVars)) . '`)';
         $values = ' VALUES (' . implode(',', array_values($dbVars)) . ')';
@@ -60,7 +58,11 @@ class Model {
     public function format($name, $value) {
         $class = get_called_class();
         $name = Model::filterToDb($name);
-        switch($class::getRules()[$name]) {
+        $rules = $class::getRules();
+        
+        $rule = in_array($name, $rules) ? $rules[$name] : "string";
+        
+        switch($rule) {
             case "integer":
                 return intval($value);
             case "double":
@@ -80,6 +82,8 @@ class Model {
                 $date = new \DateTime();
                 $date->setTimestamp($value);
                 return "'" . $date->format('Y-m-d H:i:s') . "'";
+            case "boolean":
+            	return boolval($value);
             case "string":
             default:
                 return "'" . $value . "'";
@@ -248,12 +252,18 @@ class Model {
         if (key_exists($name, $this->_relations)) {
             /** \Model $model */
             $model = '\Models\\' .  ucfirst($name);
+            
+            if (!class_exists($model)) {
+            	throw new \UnexpectedValueException('Model ' . $model . ' does not exist!');
+            }
+            
             $result = $model::getBy([$this->_relations[$name][1] => $this->{$this->_relations[$name][0]}]);
             if (count($result) == 1) {
                 return $result[0];
             }
             return $result;
         }
+        throw new \InvalidArgumentException('Relation or attribute ' . $name . ' does not exist!');
     }
     
     public static function getRules() {

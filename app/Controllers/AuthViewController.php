@@ -6,15 +6,40 @@ use Views\AuthView;
 use Models\User;
 
 class AuthViewController {
-    public static function getLogin() {
+	
+	public function beforeAction() {
         global $auth;
         if ($auth->isAuthorised()) {
             header('Location: /user/view/' . $auth->getUser()->id);
+            exit;
         }
+		?>
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<meta charset="utf-8">
+				<title>Authorize</title>
+				<link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" type="text/css">
+				<link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap-theme.min.css" type="text/css">
+			</head>
+			<body>
+				<div class="container">
+		<?php
+	}
+	
+	public function afterAction() {
+		?>
+				</div>
+			</body>
+		</html>
+		<?php
+	}
+	
+    public function getLogin() {
         AuthView::loginForm();
     }
     
-    public static function postLogin() {
+    public function postLogin() {
         if (isset($_POST['email']) && isset($_POST['password'])) {
             $user = User::getBy(['email' => $_POST['email'], 'password' => hash('sha256' , $_POST['password'])]);
             if ($user) {
@@ -29,7 +54,7 @@ class AuthViewController {
         header('Location: /auth/login/');
     }
     
-    public static function getRegister() {
+    public function getRegister() {
         global $auth;
         if ($auth->isAuthorised()) {
             header('Location: /user/view/' . $auth->getUser()->id);
@@ -37,7 +62,7 @@ class AuthViewController {
         AuthView::registerForm();
     }
     
-    public static function postRegister() {
+    public function postRegister() {
         if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['name'])) {
             $user = User::getBy(['email' => $_POST['email'], 'password' => hash('sha256' , $_POST['password'])]);
             if ($user) {
@@ -60,7 +85,7 @@ class AuthViewController {
         header('Location: /auth/register/');
     }
     
-    public  static function postLogout() {
+    public function postLogout() {
         global $auth;
         $auth->logout();
         header('Location: /auth/login/');

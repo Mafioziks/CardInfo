@@ -18,15 +18,13 @@ if (isset($argv[1]) && isset($argv[2])) {
 // Initialize service
 $auth = AuthorisationService::getInstance();
 
-// Get request method
-$method = strtolower($_SERVER['REQUEST_METHOD']);
-
 $link = $_SERVER['REQUEST_URI'];
 
 // Edit for api calls
 if (strpos($link, $apiBase)) {
     $isApi = true;
     $link = substr($link, strpos($link, $apiBase) + strlen($apiBase));
+    header("Content-Type: application/json");
 }
 
 // SPlit link in callable parts
@@ -39,13 +37,21 @@ if ($status == 404) {
     exit;
 }
 
-// Call controller
-if ($isApi) {
-    echo "<pre>";
+extract($request);
+
+$page = new $controller();
+if (method_exists($page, 'beforeAction')) {
+	$page->beforeAction();
 }
 
-call_user_func_array([$request['controller'], $request['function']], (isset($request['param']) ? [$request['param']] : []));
+if (!isset($param)) {
+    $page->$function();
+} else if (count($param) > 1) {
+	$page->$function( $param['id'], $param['the_id']);
+} else {
+	$page->$function(isset($param)? $param['id'] : null);
+}
 
-if ($isApi) {
-    echo "</pre>";
+if (method_exists($page, 'afterAction' )) {
+	$page->afterAction();
 }
